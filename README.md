@@ -11,7 +11,8 @@ Usage
 =====
 1. Clone the repository
 2. Build the project using `dotnet build`
-3. Run the application with `dotnet run -- <path-to-nordnet-csv>`
+3. Create a folder named AppData in the project root and place your Nordnet CSV file there
+4. Run the application with `dotnet run`
 
 Roadmap
 =======
