@@ -1,6 +1,6 @@
 using NordnetTaxCalculator.Entities;
 
-namespace NordnetTaxCalculator.Services;
+namespace NordnetTaxCalculator.Interfaces;
 
 public interface ICsvReader
 {

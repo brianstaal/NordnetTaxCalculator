@@ -1,5 +1,6 @@
 using System.Globalization;
 using NordnetTaxCalculator.Entities;
+using NordnetTaxCalculator.Interfaces;
 using Spectre.Console;
 
 namespace NordnetTaxCalculator.Services;

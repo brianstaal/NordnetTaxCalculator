@@ -5,6 +5,8 @@ public class Transaction
     public DateTime TransactionDate { get; set; }
 
     public string Stock { get; set; } = "";
+    
+    public string ISIN { get; set; } = "";
 
     public string TransactionType { get; set; } = "";
 

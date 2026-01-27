@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using NordnetTaxCalculator.Entities;
+using NordnetTaxCalculator.Interfaces;
 using SoftCircuits.CsvParser;
 
 namespace NordnetTaxCalculator.Services;
@@ -40,8 +41,9 @@ public class NordnetCsvReader : ICsvReader
                 var headerList = headers.Select(h => h.Trim()).ToList();
 
                 var dateColIndex = headerList.FindIndex(h => h.Equals("Valørdag", StringComparison.OrdinalIgnoreCase));
-                var stockColIndex = headerList.FindIndex(h => h.Equals("Værdipapirer", StringComparison.OrdinalIgnoreCase));
                 var transactionTypeColIndex = headerList.FindIndex(h => h.Equals("Transaktionstype", StringComparison.OrdinalIgnoreCase));
+                var stockColIndex = headerList.FindIndex(h => h.Equals("Værdipapirer", StringComparison.OrdinalIgnoreCase));
+                var isinColIndex = headerList.FindIndex(h => h.Equals("ISIN", StringComparison.OrdinalIgnoreCase));
                 var quantityColIndex = headerList.FindIndex(h => h.Equals("Antal", StringComparison.OrdinalIgnoreCase));
                 var rateColIndex = headerList.FindIndex(h => h.Equals("Kurs", StringComparison.OrdinalIgnoreCase));
                 var feeColIndex = headerList.FindIndex(h => h.Equals("Samlede afgifter", StringComparison.OrdinalIgnoreCase));
@@ -56,8 +58,9 @@ public class NordnetCsvReader : ICsvReader
                 while (reader.ReadRow(ref columns))
                 {
                     if (columns.Length <= dateColIndex ||
-                        columns.Length <= stockColIndex ||
                         columns.Length <= transactionTypeColIndex ||
+                        columns.Length <= stockColIndex ||
+                        columns.Length <= isinColIndex ||
                         columns.Length <= quantityColIndex ||
                         columns.Length <= rateColIndex ||
                         columns.Length <= feeColIndex ||
@@ -65,12 +68,16 @@ public class NordnetCsvReader : ICsvReader
                         continue;
 
                     var dateStr = columns[dateColIndex].Trim();
-                    var stock = columns[stockColIndex].Trim();
                     var transactionType = columns[transactionTypeColIndex].Trim();
+                    var stock = columns[stockColIndex].Trim();
+                    var isin = columns[isinColIndex].Trim();
                     var quantity = columns[quantityColIndex].Trim();
                     var rateStr = columns[rateColIndex].Trim();
                     var feeStr = columns[feeColIndex].Trim();
                     var amountStr = columns[amountColIndex].Trim();
+
+                    if (string.IsNullOrEmpty(stock))
+                        continue;
 
                     // Clean up amount (spaces, non-breaking spaces)
                     rateStr = rateStr.Replace(" ", "").Replace("\u00A0", "");
@@ -86,8 +93,9 @@ public class NordnetCsvReader : ICsvReader
 
                         transactions.Add(new Transaction { 
                             TransactionDate = transactionDate,
-                            Stock = stock, 
                             TransactionType = transactionType, 
+                            Stock = stock, 
+                            ISIN = isin,
                             Quantity = qty,
                             Rate = rate,
                             Fee = fee,

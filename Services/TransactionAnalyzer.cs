@@ -1,9 +1,33 @@
 using NordnetTaxCalculator.Entities;
+using NordnetTaxCalculator.Interfaces;
 
 namespace NordnetTaxCalculator.Services;
 
 public class TransactionAnalyzer : ITransactionAnalyzer
 {
+    public List<Stock> SummarizeStocks(List<Transaction> transactions)
+    {
+        var stockDict = new Dictionary<string, Stock>();
+
+        foreach (var transaction in transactions)
+        {
+            if (stockDict.TryGetValue(transaction.ISIN, out var stock))
+            {
+                stock.Transactions.Add(transaction);
+            } else
+            {
+                stock = new Stock
+                {
+                    ISIN = transaction.ISIN,
+                    Name = transaction.Stock,
+                    Transactions = [transaction]
+                };
+                stockDict[transaction.ISIN] = stock;
+            }
+        }
+        return [.. stockDict.Values];
+    }
+
     public List<TransactionSummary> Analyze(List<Transaction> transactions)
     {
         return transactions

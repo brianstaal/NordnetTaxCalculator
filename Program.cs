@@ -9,7 +9,7 @@ AnsiConsole.Clear();
 
 // 1. Show Banner
 AnsiConsole.Write(
-    new FigletText("Nordnet Parser")
+    new FigletText("Nordnet Tax Calculator")
         .LeftJustified()
         .Color(Color.Lime));
 
@@ -50,8 +50,16 @@ try
         return;
     }
 
-    var summary = analyzer.Analyze(transactions);
-    printer.PrintReport(summary);
+    var stocks = analyzer.SummarizeStocks(transactions);
+
+    foreach (var stock in stocks)
+    {
+        AnsiConsole.MarkupLine($"{stock} ({stock.Transactions.Count}), [blue]Total Bought:[/] {stock.TotalBought:C}, [blue]Total Sold:[/] {stock.TotalSold:C}, [blue]Net Amount:[/] {stock.NetAmount:C}");
+    }
+
+
+    //var summary = analyzer.Analyze(transactions);
+    //printer.PrintReport(summary);
 }
 catch (Exception ex)
 {
