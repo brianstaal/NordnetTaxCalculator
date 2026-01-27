@@ -17,4 +17,4 @@ Roadmap
 
 Changelog
 =========
-v0.1 - Initial release (2024-06-15)
+v0.1 - Initial release (27.01.2026)
