@@ -5,6 +5,38 @@ namespace NordnetTaxCalculator.Services;
 
 public class TransactionAnalyzer : ITransactionAnalyzer
 {
+    public Overview GetOverview(List<Transaction> transactions)
+    {
+        var rtn = new Overview();
+
+        //HÆVNING + INDSÆTTELSE
+
+        var inserts = new List<string> { "INDBETALING", "INDSÆTTELSE" };
+
+        foreach (var transaction in transactions)
+        {
+            var amount = transaction.Amount;
+            if (amount < 0)
+                amount = -amount;
+
+
+            if (inserts.Contains(transaction.TransactionType))
+            {
+                rtn.Inserted += Math.Abs(amount);
+            }
+            else if (transaction.TransactionType.Equals("HÆVNING", StringComparison.OrdinalIgnoreCase))
+            {
+                rtn.Withdrawn += amount;
+            }
+        }
+
+
+        rtn.Stocks = SummarizeStocks(transactions);
+
+        return rtn;
+
+    }
+
     public List<Stock> SummarizeStocks(List<Transaction> transactions)
     {
         var stockDict = new Dictionary<string, Stock>();

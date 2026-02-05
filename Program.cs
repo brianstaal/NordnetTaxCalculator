@@ -50,12 +50,28 @@ try
         return;
     }
 
-    var stocks = analyzer.SummarizeStocks(transactions);
+    //var stocks = analyzer.SummarizeStocks(transactions);
+    var overview = analyzer.GetOverview(transactions);
 
-    foreach (var stock in stocks)
-    {
-        AnsiConsole.MarkupLine($"{stock} ({stock.Transactions.Count}), [blue]Total Bought:[/] {stock.TotalBought:C}, [blue]Total Sold:[/] {stock.TotalSold:C}, [blue]Net Amount:[/] {stock.NetAmount:C}");
-    }
+
+    var table = new Table()
+        .RoundedBorder()
+        .BorderColor(Color.Blue);
+
+    table.AddColumn("Indsat");
+    table.AddColumn("Hævet");
+    table.AddColumn("Indestående kapital");
+
+    // Add rows
+    table.AddRow($"{overview.Inserted:C}", $"{overview.Withdrawn:C}", $"{overview.NetAmount:C}");
+
+    AnsiConsole.Write(table);
+
+
+    //foreach (var stock in stocks)
+    //{
+    //    AnsiConsole.MarkupLine($"{stock} ({stock.Transactions.Count}), [blue]Total Bought:[/] {stock.TotalBought:C}, [blue]Total Sold:[/] {stock.TotalSold:C}, [blue]Net Amount:[/] {stock.NetAmount:C}");
+    //}
 
 
     //var summary = analyzer.Analyze(transactions);

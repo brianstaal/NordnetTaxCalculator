@@ -76,8 +76,8 @@ public class NordnetCsvReader : ICsvReader
                     var feeStr = columns[feeColIndex].Trim();
                     var amountStr = columns[amountColIndex].Trim();
 
-                    if (string.IsNullOrEmpty(stock))
-                        continue;
+                    //if (string.IsNullOrEmpty(stock))
+                    //    continue;
 
                     // Clean up amount (spaces, non-breaking spaces)
                     rateStr = rateStr.Replace(" ", "").Replace("\u00A0", "");
