@@ -1,0 +1,3 @@
+﻿This file is placed here to keep the folder structure of the project intact.
+You can place your Nordnet files here, and they will be processed by the application.
+Make sure to follow the naming conventions and file formats specified in the documentation for proper processing.
