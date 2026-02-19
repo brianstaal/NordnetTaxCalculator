@@ -8,30 +8,37 @@ public class TransactionAnalyzer : ITransactionAnalyzer
     public Overview GetOverview(List<Transaction> transactions)
     {
         var rtn = new Overview();
-
+        
         //HÆVNING + INDSÆTTELSE
+        var otherTransactions = transactions.Where(t => string.IsNullOrEmpty(t.Stock)).ToList();
 
-        var inserts = new List<string> { "INDBETALING", "INDSÆTTELSE" };
-
-        foreach (var transaction in transactions)
+        foreach (var transaction in otherTransactions)
         {
+            rtn.FirstYear = Math.Min(rtn.FirstYear, transaction.TransactionDate.Year);
+
             var amount = transaction.Amount;
-            if (amount < 0)
-                amount = -amount;
 
-
-            if (inserts.Contains(transaction.TransactionType))
+            if (transaction.TransactionType.Equals("HÆVNING", StringComparison.OrdinalIgnoreCase))
             {
-                rtn.Inserted += Math.Abs(amount);
-            }
-            else if (transaction.TransactionType.Equals("HÆVNING", StringComparison.OrdinalIgnoreCase))
-            {
+                //if (amount < 0)
+                //    amount = -amount;
                 rtn.Withdrawn += amount;
             }
+            else if (transaction.TransactionType.Equals("INDBETALING", StringComparison.OrdinalIgnoreCase) || 
+                     transaction.TransactionType.Equals("INDSÆTTELSE", StringComparison.OrdinalIgnoreCase))
+            {
+                rtn.Inserted += amount;
+            } else
+            {
+                // Interest
+                rtn.Interest += amount;
+            }
+
         }
 
-
-        rtn.Stocks = SummarizeStocks(transactions);
+        // Seperate list of transactions
+        var trades = transactions.Where(t => !string.IsNullOrEmpty(t.Stock) && t.Amount != 0).ToList();
+        rtn.Stocks = SummarizeStocks(trades);
 
         return rtn;
 
@@ -58,26 +65,5 @@ public class TransactionAnalyzer : ITransactionAnalyzer
             }
         }
         return [.. stockDict.Values];
-    }
-
-    public List<TransactionSummary> Analyze(List<Transaction> transactions)
-    {
-        return transactions
-            .Where(t => t.TransactionType.Equals("KØBT", StringComparison.OrdinalIgnoreCase) || 
-                        t.TransactionType.Equals("SOLGT", StringComparison.OrdinalIgnoreCase))
-            .GroupBy(t => t.Stock)
-            .Select(g => new TransactionSummary
-            {
-                Stock = g.Key,
-                // KØBT entries are usually negative cost. We want positive Total Bought.
-                Bought = g.Where(t => t.TransactionType.Equals("KØBT", StringComparison.OrdinalIgnoreCase))
-                          .Sum(t => Math.Abs(t.Amount)),
-                
-                // SOLGT entries are positive proceeds.
-                Sold = g.Where(t => t.TransactionType.Equals("SOLGT", StringComparison.OrdinalIgnoreCase))
-                        .Sum(t => t.Amount),
-            })
-            .OrderBy(s => s.Stock)
-            .ToList();
     }
 }

@@ -8,20 +8,6 @@ public class Stock
 
     public List<Transaction> Transactions { get; set; } = [];
 
-    public override string ToString()
-    {
-        return $"{Name} ({ISIN})";
-    }
-
-    public decimal TotalBought => Transactions
-        .Where(t => t.TransactionType.Equals("KØBT", StringComparison.OrdinalIgnoreCase))
-        .Sum(t => Math.Abs(t.Amount));
-
-    public decimal TotalSold => Transactions
-        .Where(t => t.TransactionType.Equals("SOLGT", StringComparison.OrdinalIgnoreCase))
-        .Sum(t => Math.Abs(t.Amount));
-
-    public decimal NetAmount => TotalSold - TotalBought;
 
     public int TotalQuantityBought => Transactions
         .Where(t => t.TransactionType.Equals("KØBT", StringComparison.OrdinalIgnoreCase))
@@ -32,6 +18,8 @@ public class Stock
         .Sum(t => t.Quantity);
 
     public int NetQuantity => TotalQuantityBought - TotalQuantitySold;
+
+
 
     // By using Fifo method to calculate realized gains/losses per year
     public Dictionary<int, decimal> RealizedGainsPerYear()
